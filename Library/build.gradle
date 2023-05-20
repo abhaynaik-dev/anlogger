@@ -1,0 +1,54 @@
+//Maven gradle reference taken from
+//https://betterprogramming.pub/how-to-create-and-publish-an-android-library-in-mavencentral-92397df94103
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-parcelize'
+    id 'maven-publish'
+}
+
+def getVersionName = { ->
+    return "0.0.1" // Replace with version Name
+}
+
+android {
+    namespace 'com.naik.logger'
+    compileSdk setup.compileSdk
+
+    defaultConfig {
+        minSdk setup.minSdk
+        targetSdk setup.targetSdk
+        versionCode 1
+        versionName getVersionName()
+
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'),  'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+    implementation "com.jakewharton.timber:timber:${versions.timber}"
+    implementation "org.slf4j:slf4j-api:${versions.slf4j}"
+    implementation "com.github.tony19:logback-android:${versions.logback}"
+}
+
+ext {
+    PUBLISH_GROUP_ID = 'io.github.abhaynaik-dev'
+    PUBLISH_VERSION = getVersionName()
+    PUBLISH_ARTIFACT_ID = 'anlogger'
+}
+
+apply from: 'publish-remote.gradle'
