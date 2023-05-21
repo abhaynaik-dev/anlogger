@@ -56,7 +56,7 @@ afterEvaluate {
                     }
                     developers {
                         developer {
-                            id = 'koder11'
+                            id = 'abhaynaik-dev'
                             name = 'Abhay Naik'
                             email = 'abhaynaik9008@gmail.com'
                         }
