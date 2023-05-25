@@ -6,7 +6,10 @@ object ANLogger: IANLogger {
     override fun setup(context: Context, tag: String, loggingLevel: ANLoggingLevel) {
         val config = ANLoggerConfig.FileProp(context= context, tag=tag, loggingLevel = loggingLevel)
         ANLoggerHelper.init(config)
-        ANLoggerHelper.clearLogFiles()
+
+        //Clear all previous files before starting new logging
+        if(loggingLevel == ANLoggingLevel.AN_FILE_LOGGING)
+            ANLoggerHelper.clearLogFiles()
     }
 
     override fun shareLogFile(context: Context) {
