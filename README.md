@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-  implementation "io.github.abhaynaik-dev:anlogger:0.0.1"
+  implementation "io.github.abhaynaik-dev:anlogger:0.0.2"
 }
 ```
 2) Configure ANLogger 
