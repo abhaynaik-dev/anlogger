@@ -6,7 +6,7 @@ import com.naik.logger.ANLoggingLevel
 
 class ApplicationController: Application() {
 
-    val TAG = "IRONMAN"
+    private val TAG = "IRONMAN"
 
     override fun onCreate() {
         super.onCreate()
