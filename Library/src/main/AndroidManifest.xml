@@ -13,5 +13,11 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths"/>
         </provider>
+
+        <activity
+            android:exported="false"
+            android:theme="@style/Theme.UserDialog"
+            android:name=".ui.ShareLogDialogActivity"/>
+
     </application>
 </manifest>

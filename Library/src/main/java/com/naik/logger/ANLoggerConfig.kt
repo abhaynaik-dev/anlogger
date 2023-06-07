@@ -7,7 +7,7 @@ import java.io.File
 import java.io.PrintWriter
 import java.util.regex.Pattern
 
-enum class ANLoggingLevel() {
+enum class ANLoggingLevel {
     AN_NONE,
     AN_FILE_LOGGING,
     AN_ADB_LOGGING
@@ -21,6 +21,7 @@ sealed class ANLoggerConfig {
     abstract val setup: Setup
     abstract val tag: String
     abstract val loggingLevel : ANLoggingLevel
+    abstract val fileNamePattern: String
 
     @kotlinx.parcelize.Parcelize
     class FileProp(
@@ -28,7 +29,9 @@ sealed class ANLoggerConfig {
         override val logOnBackgroundThread: Boolean,
         override val setup: Setup,
         override val tag: String,
-        override val loggingLevel: ANLoggingLevel
+        override val loggingLevel: ANLoggingLevel,
+        override val fileNamePattern: String
+
     ) : ANLoggerConfig(), Parcelable {
 
         constructor(context: Context,
@@ -36,7 +39,8 @@ sealed class ANLoggerConfig {
                     logOnBackgroundThread: Boolean = true,
                     setup: Setup = Setup(),
                     tag: String = "AN ",
-                    loggingLevel: ANLoggingLevel = ANLoggingLevel.AN_NONE) : this(folder, logOnBackgroundThread, setup, tag, loggingLevel)
+                    loggingLevel: ANLoggingLevel = ANLoggingLevel.AN_NONE,
+                    fileNamePattern: String = "") : this(folder, logOnBackgroundThread, setup, tag, loggingLevel, fileNamePattern)
 
         override val pattern = String.format(
             ANFileWritingTree.DATE_FILE_NAME_PATTERN,
@@ -53,10 +57,10 @@ sealed class ANLoggerConfig {
         val fileExtension: String = "log"
     ) : Parcelable
 
-    fun getAllExistingLogFiles() = getFilesInFolder().filter { Pattern.matches(pattern, it.name) }
+    fun getAllExistingLogFiles() = getFilesInFolder().filter { Pattern.matches(pattern, it.name) }.sortedByDescending { it.lastModified() }
     fun getLatestLogFiles() = getAllExistingLogFiles().sortedByDescending { it.lastModified() }.firstOrNull()
 
-    protected fun getFilesInFolder(): List<File> {
+    private fun getFilesInFolder(): List<File> {
         val folder = File(folder)
         if (!folder.exists()) {
             return emptyList()
@@ -65,16 +69,18 @@ sealed class ANLoggerConfig {
     }
 
     fun clearLogFiles() {
-        val newestFile = getLatestLogFiles()
-        val filesToDelete = getAllExistingLogFiles().filter { it != newestFile }
+        //val newestFile = getLatestLogFiles()
+        //If wants to preserve recently created log file
+        //val filesToDelete = getAllExistingLogFiles().filter { it != newestFile }
+        val filesToDelete = getAllExistingLogFiles()
         filesToDelete.forEach {
             it.delete()
         }
-        newestFile?.let {
+        /*newestFile?.let {
             val writer = PrintWriter(it)
             writer.print("")
             writer.close()
-        }
+        }*/
     }
 
     internal sealed class ANFileShareConfig {
@@ -95,7 +101,7 @@ sealed class ANLoggerConfig {
             override val appVersionName: String
         ) : ANFileShareConfig() {
             constructor(context: Context,
-                        logFile: File?,
+                        logFile: File? = null,
                         receiver: String = "Mail",
                         subject: String = "Log file for ${context.packageName}",
                         titleForChooser: String = "Share logs with",

@@ -13,6 +13,7 @@ import java.io.OutputStream
 
 
 internal object ANUtil {
+
     fun getRealSubject(context: Context, subject: String): String {
         return context.getAppVersionName()?.let { "$subject (v$it)" } ?: subject
     }

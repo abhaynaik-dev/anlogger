@@ -1,0 +1,7 @@
+<resources>
+    <string name="an_dialog_title">Share</string>
+    <string name="an_dialog_bottom_button">Delete all log files</string>
+    <string name="an_file_formatter">yyyyMMddHHmm</string>
+
+    <string name="an_error_file_does_not_exist">No log file available to share</string>
+</resources>

@@ -7,7 +7,9 @@ import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder
 import ch.qos.logback.classic.spi.ILoggingEvent
-import ch.qos.logback.core.rolling.*
+import ch.qos.logback.core.rolling.RollingFileAppender
+import ch.qos.logback.core.rolling.TimeBasedRollingPolicy
+import ch.qos.logback.core.rolling.TriggeringPolicy
 import org.slf4j.LoggerFactory
 import org.slf4j.MarkerFactory
 import timber.log.Timber
@@ -50,7 +52,7 @@ internal class ANFileWritingTree (config: ANLoggerConfig?): Timber.Tree() {
         var triggeringPolicy: TriggeringPolicy<ILoggingEvent>? = null
         val timeBasedRollingPolicy = TimeBasedRollingPolicy<ILoggingEvent>()
         timeBasedRollingPolicy.fileNamePattern =
-            config.folder + "/" + config.setup.fileName + "_%d{yyyyMMdd}." + config.setup.fileExtension
+            config.folder + "/" + config.setup.fileName + "_%d{${config.fileNamePattern}}." + config.setup.fileExtension
         timeBasedRollingPolicy.maxHistory = config.setup.logsToKeep
         timeBasedRollingPolicy.isCleanHistoryOnStart = true
         timeBasedRollingPolicy.setParent(rollingFileAppender)
@@ -76,7 +78,7 @@ internal class ANFileWritingTree (config: ANLoggerConfig?): Timber.Tree() {
     }
 
     companion object {
-        const val DATE_FILE_NAME_PATTERN = "%s_\\d{8}.%s"
+        const val DATE_FILE_NAME_PATTERN = "%s_\\d{12}.%s"
         internal var mLogger =
             LoggerFactory.getLogger(ANFileWritingTree::class.java)//Logger.ROOT_LOGGER_NAME);
     }
