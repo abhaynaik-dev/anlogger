@@ -8,11 +8,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -21,13 +23,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition",
+    "TimberArgCount"
+)
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun BottomSheetScreen() {
 
+    val TAG = "BottomSheetScreen"
     val context: Context = LocalContext.current
 
     val bottomSheetEvent = remember { mutableStateOf (BottomSheetEvent.SHOW) }
@@ -37,30 +43,6 @@ fun BottomSheetScreen() {
         confirmStateChange = { it != ModalBottomSheetValue.HalfExpanded },
         skipHalfExpanded = true
     )
-
-    // wrap hide function in a coroutine
-    val hideBottomSheet: () -> Unit = {
-        if(bottomSheetEvent.value == BottomSheetEvent.HIDE) {
-            coroutineScope.launch {
-                modalSheetState.hide()
-                (context as Activity).finish()
-            }
-        }
-    }
-
-    // wrap show function in a coroutine
-    val showBottomSheet: () -> Unit = {
-        if(bottomSheetEvent.value == BottomSheetEvent.SHOW) {
-            coroutineScope.launch {
-                modalSheetState.show()
-                bottomSheetEvent.value = BottomSheetEvent.HIDE
-            }
-        }
-        //This means user has either clicked outside of the sheet
-        else if (bottomSheetEvent.value == BottomSheetEvent.HIDE){
-            hideBottomSheet()
-        }
-    }
 
     ModalBottomSheetLayout(
         modifier = Modifier
@@ -74,7 +56,13 @@ fun BottomSheetScreen() {
             ) {
                 BottomSheetContent(
                     onClosBottomSheet = {
-                       hideBottomSheet()
+                        coroutineScope.launch {
+                            handleBottomSheetState(
+                                bottomSheetEvent = bottomSheetEvent,
+                                modalSheetState = modalSheetState,
+                                context = context
+                            )
+                        }
                     })
             }
         }
@@ -84,19 +72,48 @@ fun BottomSheetScreen() {
     LaunchedEffect(modalSheetState.currentValue) {
         when (modalSheetState.currentValue) {
             ModalBottomSheetValue.Hidden -> {
-                showBottomSheet()
+                handleBottomSheetState(
+                    bottomSheetEvent = bottomSheetEvent,
+                    modalSheetState = modalSheetState,
+                    context = context
+                )
             }
             else -> {
+                bottomSheetEvent.value = BottomSheetEvent.HIDE
+                Timber.tag(TAG).i("%s state", "Bottom sheet %s", modalSheetState.currentValue)
             }
         }
     }
 
     BackHandler(modalSheetState.isVisible) {
-        hideBottomSheet()
+        coroutineScope.launch {
+            handleBottomSheetState(
+                bottomSheetEvent = bottomSheetEvent,
+                modalSheetState = modalSheetState,
+                context = context
+            )
+        }
     }
 }
 
-enum class BottomSheetEvent{
+@OptIn(ExperimentalMaterialApi::class)
+private suspend fun handleBottomSheetState(
+    bottomSheetEvent: MutableState<BottomSheetEvent>,
+    modalSheetState: ModalBottomSheetState,
+    context: Context
+){
+    if(bottomSheetEvent.value == BottomSheetEvent.SHOW) {
+        modalSheetState.show()
+    }
+    //This means user has either clicked outside of the sheet
+    else if (bottomSheetEvent.value == BottomSheetEvent.HIDE){
+        modalSheetState.hide()
+        (context as Activity).finish()
+    }
+}
+
+
+enum class BottomSheetEvent  {
     NONE,
     SHOW,
     HIDE

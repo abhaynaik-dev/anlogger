@@ -5,17 +5,20 @@ import com.naik.logger.ANLogger
 import com.naik.logger.ANLoggingLevel
 
 class ApplicationController: Application() {
+
+    val TAG = "IRONMAN"
+
     override fun onCreate() {
         super.onCreate()
         //Enable ANLogger in debug mode only
         if (BuildConfig.DEBUG) {
             if(BuildConfig.isANFileLoggingEnabled)
-                ANLogger.setup(context = this, tag = "IRONMAN" , ANLoggingLevel.AN_FILE_LOGGING)
+                ANLogger.setup(context = this, tag = TAG, loggingLevel =  ANLoggingLevel.AN_FILE_LOGGING)
             else
-                ANLogger.setup(context = this, loggingLevel = ANLoggingLevel.AN_ADB_LOGGING)
+                ANLogger.setup(context = this, tag = TAG, loggingLevel = ANLoggingLevel.AN_ADB_LOGGING)
         } else {
+            //It's a production environment
             //Do not do anything here
-            //It's a production environment, let's not touch it
         }
     }
 }

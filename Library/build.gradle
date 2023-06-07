@@ -8,7 +8,7 @@ plugins {
 }
 
 def getVersionName = { ->
-    return "0.0.2" // Replace with version Name
+    return "0.1.0" // Replace with version Name
 }
 
 android {
