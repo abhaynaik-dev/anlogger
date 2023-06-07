@@ -2,7 +2,7 @@ ext {
 
     setup = [
             compileSdk: 33,
-            minSdk    : 16,
+            minSdk    : 21,
             targetSdk : 33
     ]
 
@@ -11,10 +11,12 @@ ext {
             gradlePlugin    : "7.2.2",
             mavenVersion    : "2.0",
 
-            material        : "1.7.0",
             recyclerview    : "1.2.1",
             lifecycle       : "2.5.1",
             constraintlayout: "2.0.4",
+            material        : "1.2.0-beta02",
+            activitycompose : "1.5.1",
+            composebom      : "2022.10.00",
 
             fastscroller    : "1.0.0",
             slf4j           : "1.7.32",

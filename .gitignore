@@ -4,6 +4,8 @@
 /local.properties
 .DS_Store
 /build
+/app/build
+/Library/build
 /captures
 .externalNativeBuild
 .cxx
