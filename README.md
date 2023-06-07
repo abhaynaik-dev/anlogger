@@ -13,7 +13,7 @@
 2) Do not plant or use any custom a `Timber` tree, `ANLogger` will take care of everything.
 
 # ⭕ Usage
-<img src="https://github.com/abhaynaik-dev/anlogger/blob/feature-share-file-ui/githubcontent/sample_anlogger.gif" align="right" width="250px" />
+<img src="https://github.com/abhaynaik-dev/anlogger/blob/feature-share-file-ui/githubcontent/sample_anlogger.gif" align="right" width="250px"/>
 
 1) Dependency
 ```gradle
@@ -22,7 +22,7 @@ repositories {
 }
 
 dependencies {
-  implementation "io.github.abhaynaik-dev:anlogger:0.0.2"
+  implementation "io.github.abhaynaik-dev:anlogger:0.1.1"
 }
 ```
 2) Configure ANLogger
